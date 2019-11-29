@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"sync"
 
 	"context"
@@ -40,6 +41,17 @@ type service struct {
 
 func (s *service) CreateConsignment(ctx context.Context, req *pb.Consignment, res *pb.Response) error {
 
+	vesselResponse, err := s.vesselClient.FindAvailable(context.Background(), &vesselProto.Specification{
+		MaxWeight: req.Weight,
+		Capacity:  int32(len(req.Containers)),
+	})
+	log.Printf("Found vessel: %s \n", vesselResponse.Vessel.Name)
+	if err != nil {
+		return err
+	}
+
+	req.VesselId = vesselResponse.Vessel.Id
+
 	consignment, err := s.repo.Create(req)
 	if err != nil {
 		return err
@@ -68,7 +80,9 @@ func main() {
 
 	srv.Init()
 
-	pb.RegisterShippingServiceHandler(srv.Server(), &service{repo})
+	vesselClient := vesselProto.NewVesselServiceClient("shippy.service.vessel", srv.Client())
+
+	pb.RegisterShippingServiceHandler(srv.Server(), &service{repo, vesselClient})
 
 	if err := srv.Run(); err != nil {
 		fmt.Println(err)

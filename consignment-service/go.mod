@@ -3,6 +3,7 @@ module github.com/anson-vandoren/shippy/consignment-service
 go 1.13
 
 require (
+	github.com/anson-vandoren/shippy/vessel-service v0.0.0-20191129141312-c92e6d8eefc8
 	github.com/coreos/etcd v3.3.18+incompatible // indirect
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/protobuf v1.3.2

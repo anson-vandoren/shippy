@@ -7,6 +7,7 @@ import (
 	"context"
 
 	pb "github.com/anson-vandoren/shippy/consignment-service/proto/consignment"
+	vesselProto "github.com/anson-vandoren/shippy/vessel-service/proto/vessel"
 	"github.com/micro/go-micro"
 )
 
@@ -33,7 +34,8 @@ func (repo *Repository) GetAll() []*pb.Consignment {
 }
 
 type service struct {
-	repo repository
+	repo         repository
+	vesselClient vesselProto.VesselServiceClient
 }
 
 func (s *service) CreateConsignment(ctx context.Context, req *pb.Consignment, res *pb.Response) error {
